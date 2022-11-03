@@ -115,7 +115,7 @@ Flags:
 		if err != nil {
 			fmt.Printf("Cannot connect to the remote session. Make sure the URL points to a valid tty-share session.\n")
 		}
-		fmt.Printf("\ntty-share disconnected\n\n")
+		fmt.Printf("\nSharing disconnected\n\n")
 		return
 	}
 
@@ -166,8 +166,8 @@ Flags:
 	}
 
 	fmt.Printf("local session: http://%s/s/local/\n", *listenAddress)
-	fmt.Printf("Press Enter to continue!\n")
-	bufio.NewReader(os.Stdin).ReadString('\n')
+	//fmt.Printf("Press Enter to continue!\n")
+	//bufio.NewReader(os.Stdin).ReadString('\n')
 
 	stopPtyAndRestore := func () {
 		ptyMaster.Stop()
@@ -217,6 +217,6 @@ Flags:
 	}()
 
 	ptyMaster.Wait()
-	fmt.Printf("tty-share finished\n\n\r")
+	fmt.Printf("Sharing finished\n\n\r")
 	server.Stop()
 }
