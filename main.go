@@ -75,6 +75,7 @@ Flags:
 	publicSession := flag.Bool("public", false, "Create a public session")
 	noTLS := flag.Bool("no-tls", false, "Don't use TLS to connect to the tty-proxy server. Useful for local debugging")
 	detachKeys := flag.String("detach-keys", "ctrl-o,ctrl-c", "Sequence of keys to press for closing the connection. Supported: https://godoc.org/github.com/moby/term#pkg-variables.")
+	silent := flag.Bool("silent", false, "Silent prompts and messages")
 	verbose := flag.Bool("verbose", false, "Verbose logging")
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), "%s", usageString)
@@ -165,9 +166,11 @@ Flags:
 		fmt.Printf("public session: %s\n", publicURL)
 	}
 
-	fmt.Printf("local session: http://%s/s/local/\n", *listenAddress)
-	//fmt.Printf("Press Enter to continue!\n")
-	//bufio.NewReader(os.Stdin).ReadString('\n')
+	if !*silent{
+		fmt.Printf("local session: http://%s/s/local/\n", *listenAddress)
+		//fmt.Printf("Press Enter to continue!\n")
+		//bufio.NewReader(os.Stdin).ReadString('\n')
+	}
 
 	stopPtyAndRestore := func () {
 		ptyMaster.Stop()
@@ -217,6 +220,8 @@ Flags:
 	}()
 
 	ptyMaster.Wait()
-	fmt.Printf("Sharing finished\n\n\r")
+	if !*silent{
+		fmt.Printf("Sharing finished\n\n\r")
+	}
 	server.Stop()
 }
