@@ -81,7 +81,7 @@ Flags:
 	readOnly := flag.Bool("readonly", false, "[s] Start a read only session")
 	publicSession := flag.Bool("public", false, "[s] Create a public session")
 	noTLS := flag.Bool("no-tls", false, "[s] Don't use TLS to connect to the tty-proxy server. Useful for local debugging")
-	noWaitEnter := flag.Bool("no-wait", false, "[s] Don't wait for the Enter press before starting the session")
+	WaitEnter := flag.Bool("wait", false, "[s] Wait for the Enter press before starting the session")
 	headless := flag.Bool("headless", false, "[s] Don't expect an interactive terminal at stdin")
 	headlessCols := flag.Int("headless-cols", 80, "[s] Number of cols for the allocated pty when running headless")
 	headlessRows := flag.Int("headless-rows", 25, "[s] Number of rows for the allocated pty when running headless")
@@ -90,6 +90,7 @@ Flags:
 	tunnelConfig := flag.String("L", "", "[c] TCP tunneling addresses: local_port:remote_host:remote_port. The client will listen on local_port for TCP connections, and will forward those to the from the server side to remote_host:remote_port")
 	crossOrgin := flag.Bool("cross-origin", false, "[s] Allow cross origin requests to the server")
 	baseUrlPath := flag.String("base-url-path", "", "[s] The base URL path on the serve")
+	silent := flag.Bool("silent", false, "Silent prompts and messages")
 
 	verbose := flag.Bool("verbose", false, "Verbose logging")
 	flag.Usage = func() {
@@ -132,7 +133,7 @@ Flags:
 		if err != nil {
 			fmt.Printf("Cannot connect to the remote session. Make sure the URL points to a valid tty-share session.\n")
 		}
-		fmt.Printf("\ntty-share disconnected\n\n")
+		fmt.Printf("\nSharing disconnected\n\n")
 		return
 	}
 
@@ -190,11 +191,13 @@ Flags:
 		sanitizedBaseUrlPath = "/" + sanitizedBaseUrlPath
 	}
 
-	fmt.Printf("local session: http://%s%s/s/local/\n", *listenAddress, sanitizedBaseUrlPath)
+	if !*silent{
+		fmt.Printf("local session: http://%s%s/s/local/\n", *listenAddress, sanitizedBaseUrlPath)
 
-	if !*noWaitEnter && !*headless {
-		fmt.Printf("Press Enter to continue!\n")
-		bufio.NewReader(os.Stdin).ReadString('\n')
+		if *WaitEnter && !*headless {
+			fmt.Printf("Press Enter to continue!\n")
+			bufio.NewReader(os.Stdin).ReadString('\n')
+		}
 	}
 
 	stopPtyAndRestore := func() {
@@ -250,6 +253,8 @@ Flags:
 	}
 
 	ptyMaster.Wait()
-	fmt.Printf("tty-share finished\n\n\r")
+	if !*silent{
+		fmt.Printf("Sharing finished\n\n\r")
+	}
 	server.Stop()
 }
