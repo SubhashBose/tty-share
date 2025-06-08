@@ -189,8 +189,8 @@ Flags:
 			fmt.Printf("public session: %s\n", publicURL)
 		} else {
 			formData := url.Values{}
-    		formData.Set("text", publicURL)
-			http.Post(*webhookurl, "application/x-www-form-urlencoded", bytes.NewBufferString(formData.Encode())
+    		formData.Set("url", publicURL)
+			http.Post(*webhookurl, "application/x-www-form-urlencoded", bytes.NewBufferString(formData.Encode()))
 		}
 	}
 
