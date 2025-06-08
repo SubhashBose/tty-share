@@ -187,10 +187,9 @@ Flags:
 	if publicURL != "" {
 		if *webhookurl == "" {
 			fmt.Printf("public session: %s\n", publicURL)
-		}
-		else {
+		} else {
 			formData := url.Values{}
-    			formData.Set("text", publicURL)
+    		formData.Set("text", publicURL)
 			http.Post(*webhookurl, "application/x-www-form-urlencoded", bytes.NewBufferString(formData.Encode())
 		}
 	}
