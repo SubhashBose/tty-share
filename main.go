@@ -7,6 +7,10 @@ import (
 	"io"
 	"os"
 	"strings"
+	"net/http"
+	"bytes"
+	"net/url"
+	
 
 	"github.com/elisescu/tty-share/proxy"
 	"github.com/elisescu/tty-share/server"
@@ -80,6 +84,7 @@ Flags:
 	proxyServerAddress := flag.String("tty-proxy", "on.tty-share.com:4567", "[s] Address of the proxy for public facing connections")
 	readOnly := flag.Bool("readonly", false, "[s] Start a read only session")
 	publicSession := flag.Bool("public", false, "[s] Create a public session")
+	webhookurl := flag.String("webhook", "", "[s] Send public session url to this webhook")
 	noTLS := flag.Bool("no-tls", false, "[s] Don't use TLS to connect to the tty-proxy server. Useful for local debugging")
 	WaitEnter := flag.Bool("wait", false, "[s] Wait for the Enter press before starting the session")
 	headless := flag.Bool("headless", false, "[s] Don't expect an interactive terminal at stdin")
@@ -180,7 +185,14 @@ Flags:
 	// Display the session information to the user, before showing any output from the command.
 	// Wait until the user presses Enter
 	if publicURL != "" {
-		fmt.Printf("public session: %s\n", publicURL)
+		if *webhookurl == "" {
+			fmt.Printf("public session: %s\n", publicURL)
+		}
+		else {
+			formData := url.Values{}
+    			formData.Set("text", publicURL)
+			http.Post(*webhookurl, "application/x-www-form-urlencoded", bytes.NewBufferString(formData.Encode())
+		}
 	}
 
 	// Ensure the base URL path does not end with a forward slash,
