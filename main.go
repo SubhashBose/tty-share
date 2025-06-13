@@ -154,7 +154,8 @@ Flags:
 		proxy, err := proxy.NewProxyConnection(*listenAddress, *proxyServerAddress, *noTLS)
 		if err != nil {
 			log.Errorf("Can't connect to the proxy: %s\n", err.Error())
-			return
+			//return
+			os.Exit(1)
 		}
 
 		go proxy.RunProxy()
@@ -179,7 +180,8 @@ Flags:
 	err := ptyMaster.Start(*commandName, strings.Fields(*commandArgs), envVars)
 	if err != nil {
 		log.Errorf("Cannot start the %s command: %s", *commandName, err.Error())
-		return
+		//return
+		os.Exit(1)
 	}
 
 	// Display the session information to the user, before showing any output from the command.
